@@ -1,0 +1,53 @@
+import socket
+import threading
+import random
+
+# Quotes
+quotes = [
+    "We all have ability. The difference is how we use it.",
+    "Quality is never an accident. It is always the result of intelligent effort.",
+    "We make a living by what we get, but we make a life by what we give.",
+    "We do not remember days, we remember moments.",
+    "Life isn't about finding yourself. Life is about creating yourself.",
+    "Life is what happens while you are busy making other plans.",
+    "That which does not kill us makes us stronger.",
+    "No one saves us but ourselves. No one can and no one may. We ourselves must walk the path.",
+
+]
+
+def handle_client(client_socket):
+    # Retrieve quote
+    random_quote = random.choice(quotes)
+
+    # Send the quote
+    client_socket.send(random_quote.encode())
+
+    # Close the connection
+    client_socket.close()
+
+def main():
+    host = '192.168.12.129'
+    port = 8080
+
+    # Create socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket
+    server_socket.bind((host, port))
+
+    # Listening
+    server_socket.listen(5)
+    print("Quote of the Day server listening on {}:{}".format(host, port))
+
+    while True:
+        # Accept connection
+        client_socket, client_addr = server_socket.accept()
+        print("Connection established with {}".format(client_addr))
+
+        # Create a new thread
+        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread.start()
+
+if __name__ == "__main__":
+    main()
+
